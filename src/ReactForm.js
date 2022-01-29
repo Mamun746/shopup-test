@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import axios from "axios";
+import { clear } from "@testing-library/user-event/dist/clear";
 
 function ReactForm() {
   const [name, setName] = useState("");
@@ -40,7 +41,7 @@ function ReactForm() {
     setEmail("");
     setPassword("");
   };
-  // z6707vFeSirwfFc196lTNqqQqMHRmUxO;
+
   const handleSearch = (e) => {
     axios
       .get(
@@ -51,7 +52,19 @@ function ReactForm() {
       });
   };
 
-  console.log(data);
+  const debounce = (callback, delay) => {
+    // add your debounce logic here
+    let timer;
+    return function (...args) {
+      const context = this;
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        timer = null
+        callback.apply(context,args);
+      },delay)
+    }
+  };
+  const debouncedSearch = debounce(handleSearch, 1000);
   return (
     <>
       <div>
@@ -100,16 +113,17 @@ function ReactForm() {
           <input
             placeholder="search with debounce"
             type="text"
-            // onChange={debouncedSearch}
-            onChange={handleSearch}
+            onChange={debouncedSearch}
+            // onChange={handleSearch}
           />
         </label>
       </div>
       <div>
         {data.map((data) => {
           return (
-            <div className="container">
-              <p className="grid-item">{data.title}</p>
+            <div style={{ display: "flex" ,alignItem:'center'}}>
+              <p>{data.title}</p>
+             
             </div>
           );
         })}
